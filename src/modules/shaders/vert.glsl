@@ -23,7 +23,7 @@ void main() {
     vec3 adjustedPosition = vec3(
     position.x,
     position.y,
-    position.z + sin(iter * 0.03 + uv.x*0.1) * distPct
+    position.z + sin(iter * 0.03 + uv.x*0.1) * distPct*0.2
     );
 
   vec4 mvPosition = modelViewMatrix * vec4(adjustedPosition, 1.0);

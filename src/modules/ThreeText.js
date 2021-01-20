@@ -26,6 +26,8 @@ class ThreeText {
     this.mesh;
     this.font;
 
+    this.targetMeshScale = 1;
+
     // Mouse
     this.currentMouse = { x: 0, y: 0 };
     this.targetMouse = { x: 0, y: 0 };
@@ -35,6 +37,11 @@ class ThreeText {
       cameraDistance: 100,
       bgColor: 0x111,
       mouseEase: 0.05,
+      blobMinScale: 0.6,
+      blobMaxScale: 2,
+      blobScaleEase: 0.05,
+      blobInflate: 0.015,
+      blobDeflate: 0.01,
     };
 
     this.init();
@@ -64,6 +71,11 @@ class ThreeText {
     folder.open();
 
     window.APP.gui.add(this.settings, 'mouseEase', 0.01, 0.3);
+    window.APP.gui.add(this.settings, 'blobMinScale', 0.1, 1);
+    window.APP.gui.add(this.settings, 'blobMaxScale', 0.5, 5);
+    window.APP.gui.add(this.settings, 'blobScaleEase', 0.001, 0.5);
+    window.APP.gui.add(this.settings, 'blobInflate', 0.001, 0.1);
+    window.APP.gui.add(this.settings, 'blobDeflate', 0.001, 0.1);
   }
 
   loadTexture = async() => {
@@ -106,11 +118,11 @@ class ThreeText {
     this.controls.enableDamping = false;
 
     // Ambient Light
-    let ambientLight = new THREE.AmbientLight(0x0000ff, 0.15);
-    this.scene.add(ambientLight);
+    // let ambientLight = new THREE.AmbientLight(0x0000ff, 0.15);
+    // this.scene.add(ambientLight);
 
     // Directional Light
-    let directionalLight = new THREE.DirectionalLight(0xa400ff, 0.4);
+    let directionalLight = new THREE.DirectionalLight(0x4400ff, 0.4);
     directionalLight.position.set(5, 3, 2);
     directionalLight.target.position.set(0, 0, 0);
     this.scene.add(directionalLight);
@@ -148,7 +160,7 @@ class ThreeText {
     this.scene.add(this.mesh);
 
     // Create sphere
-    let blobGeom = new THREE.SphereGeometry(12, 32, 32);
+    let blobGeom = new THREE.TorusGeometry(10, 3, 16, 100);
     let blobMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       specular: 0x0000ff,
@@ -166,6 +178,11 @@ class ThreeText {
   }
 
   onMouseMove = evt => {
+    // Mesh scale grows as mouse moves
+    if (this.targetMeshScale <= this.settings.blobMaxScale) {
+      this.targetMeshScale += this.settings.blobInflate;
+    }
+
     // Project mouse position onto Z plane based on camera
     let vec = new THREE.Vector3();
     let pos = new THREE.Vector3();
@@ -190,7 +207,22 @@ class ThreeText {
   }
 
   updateItems = () => {
+    // Blob follows mouse
     this.blobMesh.position.set(this.currentMouse.x, this.currentMouse.y, 0);
+
+    // Blob rotates
+    const rotateSpeed = Math.abs(this.targetMouse.x - this.currentMouse.x) * 0.002 + 0.01;
+    this.blobMesh.rotation.x += rotateSpeed;
+    this.blobMesh.rotation.y += rotateSpeed;
+    this.blobMesh.rotation.z += rotateSpeed;
+
+    // Blob size based on mousemovement
+    const scaleEffect = (this.targetMeshScale - this.blobMesh.scale.x) * this.settings.blobScaleEase;
+    this.blobMesh.scale.set(this.blobMesh.scale.x + scaleEffect, this.blobMesh.scale.x + scaleEffect, this.blobMesh.scale.x + scaleEffect);
+
+    if (this.targetMeshScale > this.settings.blobMinScale) {
+      this.targetMeshScale -= this.settings.blobDeflate;
+    }
   }
 
   updateCamera = () => {
