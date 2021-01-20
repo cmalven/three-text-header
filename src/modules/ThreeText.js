@@ -33,7 +33,7 @@ class ThreeText {
     // Settings
     this.settings = {
       cameraDistance: 100,
-      bgColor: 0x212322,
+      bgColor: 0x111,
       mouseEase: 0.05,
     };
 
@@ -63,7 +63,7 @@ class ThreeText {
     const folder = window.APP.gui.setFolder('ThreeExample');
     folder.open();
 
-    window.APP.gui.add(this.settings, 'mouseEase', 0.001, 1);
+    window.APP.gui.add(this.settings, 'mouseEase', 0.01, 0.3);
   }
 
   loadTexture = async() => {
@@ -105,6 +105,16 @@ class ThreeText {
     this.controls.enableZoom = false;
     this.controls.enableDamping = false;
 
+    // Ambient Light
+    let ambientLight = new THREE.AmbientLight(0x0000ff, 0.15);
+    this.scene.add(ambientLight);
+
+    // Directional Light
+    let directionalLight = new THREE.DirectionalLight(0xa400ff, 0.4);
+    directionalLight.position.set(5, 3, 2);
+    directionalLight.target.position.set(0, 0, 0);
+    this.scene.add(directionalLight);
+
     // Resize the renderer on window resize
     window.addEventListener('resize', this.updateCamera, true);
   }
@@ -136,6 +146,16 @@ class ThreeText {
 
     this.mesh = new THREE.Mesh(geometry, shaderMaterial);
     this.scene.add(this.mesh);
+
+    // Create sphere
+    let blobGeom = new THREE.SphereGeometry(12, 32, 32);
+    let blobMat = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      specular: 0x0000ff,
+      shininess: 6,
+    });
+    this.blobMesh = new THREE.Mesh(blobGeom, blobMat);
+    this.scene.add(this.blobMesh);
 
     // Fit camera
     this.updateCamera();
@@ -170,7 +190,7 @@ class ThreeText {
   }
 
   updateItems = () => {
-
+    this.blobMesh.position.set(this.currentMouse.x, this.currentMouse.y, 0);
   }
 
   updateCamera = () => {
