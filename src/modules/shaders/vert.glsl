@@ -8,14 +8,6 @@ varying vec3 vPosition;
 // attribute vec3 position;
 // attribute vec2 uv;
 
-float easeIn(float t) {
-  return t * t;
-}
-
-float lerp(float start, float end, float pct) {
-  return (start + (end - start) * pct);
-}
-
 void main() {
     float dist = distance(position.x, currentMouse.x);
     float distPct = dist / 5.0;
