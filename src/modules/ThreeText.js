@@ -35,9 +35,8 @@ class ThreeText {
     // Settings
     this.settings = {
       cameraDistance: 100,
-      bgColor: 0x111,
       mouseEase: 0.05,
-      blobMinScale: 0.6,
+      blobMinScale: 0.8,
       blobMaxScale: 2,
       blobScaleEase: 0.05,
       blobInflate: 0.015,
@@ -101,6 +100,7 @@ class ThreeText {
     this.renderer = new THREE.WebGLRenderer({
       devicePixelRatio: 1.5,
       antialias: true,
+      alpha: true,
     });
     this.renderer.setSize(this.appContainer.offsetWidth, this.appContainer.offsetHeight);
     this.appContainer.appendChild(this.renderer.domElement);
@@ -109,7 +109,6 @@ class ThreeText {
     this.camera = new THREE.PerspectiveCamera(45, this.appContainer.offsetWidth / this.appContainer.offsetHeight, 1, 10000);
     this.camera.position.set(-3, 2, this.settings.cameraDistance);
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(this.settings.bgColor);
 
     // Orbit Controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -208,7 +207,7 @@ class ThreeText {
 
   updateItems = () => {
     // Blob follows mouse
-    this.blobMesh.position.set(this.currentMouse.x, this.currentMouse.y, 0);
+    this.blobMesh.position.set(this.currentMouse.x, this.currentMouse.y, 15);
 
     // Blob rotates
     const rotateSpeed = Math.abs(this.targetMouse.x - this.currentMouse.x) * 0.002 + 0.01;
