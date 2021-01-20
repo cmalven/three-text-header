@@ -150,10 +150,7 @@ class ThreeText {
     const message = 'Your ideal creative \n web development \n partner.';
     const shapes = this.font.generateShapes(message, 8);
     const geometry = new THREE.ShapeBufferGeometry(shapes);
-    geometry.computeBoundingBox();
-    const xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-    const yMid = 0.3 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y);
-    geometry.translate(xMid, yMid, 0);
+    geometry.center();
 
     this.mesh = new THREE.Mesh(geometry, shaderMaterial);
     this.scene.add(this.mesh);
