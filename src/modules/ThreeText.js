@@ -159,7 +159,7 @@ class ThreeText {
     this.scene.add(this.mesh);
 
     // Create sphere
-    let blobGeom = new THREE.TorusGeometry(10, 3, 16, 100);
+    let blobGeom = new THREE.TorusBufferGeometry(10, 3, 16, 100);
     let blobMat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       specular: 0x0000ff,
