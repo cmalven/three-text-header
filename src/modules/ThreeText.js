@@ -23,6 +23,7 @@ class ThreeText {
     this.imageTexture;
     this.uniforms;
     this.geometry;
+    this.directionalLight;
     this.mesh;
     this.font;
 
@@ -41,6 +42,7 @@ class ThreeText {
       blobScaleEase: 0.05,
       blobInflate: 0.015,
       blobDeflate: 0.01,
+      lightIntensity: 0.4,
     };
 
     this.init();
@@ -74,6 +76,7 @@ class ThreeText {
     window.APP.gui.add(this.settings, 'blobScaleEase', 0.001, 0.5);
     window.APP.gui.add(this.settings, 'blobInflate', 0.001, 0.1);
     window.APP.gui.add(this.settings, 'blobDeflate', 0.001, 0.1);
+    window.APP.gui.add(this.settings, 'lightIntensity', 0.01, 5);
   }
 
   createUniforms = () => {
@@ -116,10 +119,10 @@ class ThreeText {
     // this.scene.add(ambientLight);
 
     // Directional Light
-    let directionalLight = new THREE.DirectionalLight(0x4400ff, 0.4);
-    directionalLight.position.set(5, 3, 2);
-    directionalLight.target.position.set(0, 0, 0);
-    this.scene.add(directionalLight);
+    this.directionalLight = new THREE.DirectionalLight(0x4400ff, this.settings.lightIntensity);
+    this.directionalLight.position.set(5, 3, 2);
+    this.directionalLight.target.position.set(0, 0, 0);
+    this.scene.add(this.directionalLight);
 
     // Resize the renderer on window resize
     window.addEventListener('resize', this.updateCamera, true);
@@ -229,12 +232,17 @@ class ThreeText {
     const fov = 2 * Math.atan((w / aspect) / (2 * dist)) * (180 / Math.PI); // in degrees
     this.camera.fov = fov * 1.2;
   }
+  
+  updateLights = () => {
+    this.directionalLight.intensity = this.settings.lightIntensity;
+  }
 
   update = () => {
     this.iter++;
     this.updateMouse();
     this.updateUniforms();
     this.updateItems();
+    this.updateLights();
     this.renderer.render(this.scene, this.camera);
     window.requestAnimationFrame(this.update);
 
