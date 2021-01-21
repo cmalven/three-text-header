@@ -22,5 +22,7 @@ void main() {
 
   vec3 texture = vec3(r, g, b);
 
-  gl_FragColor = vec4(texture, vPosition.z * 0.031 + 1.2);
+  float iterAlphaReduction = (200.0 - iter) * 0.007;
+
+  gl_FragColor = vec4(texture, vPosition.z * 0.031 + 1.2 - iterAlphaReduction);
 }

@@ -28,6 +28,7 @@ class ThreeText {
     this.font;
 
     this.targetMeshScale = 1;
+    this.targetLightIntensity = 0.4;
 
     // Mouse
     this.currentMouse = { x: 0, y: 0 };
@@ -42,7 +43,7 @@ class ThreeText {
       blobScaleEase: 0.05,
       blobInflate: 0.015,
       blobDeflate: 0.01,
-      lightIntensity: 0.4,
+      lightIntensity: 0,
     };
 
     this.init();
@@ -76,7 +77,7 @@ class ThreeText {
     window.APP.gui.add(this.settings, 'blobScaleEase', 0.001, 0.5);
     window.APP.gui.add(this.settings, 'blobInflate', 0.001, 0.1);
     window.APP.gui.add(this.settings, 'blobDeflate', 0.001, 0.1);
-    window.APP.gui.add(this.settings, 'lightIntensity', 0.01, 5);
+    window.APP.gui.add(this.settings, 'lightIntensity', 0.01, 2);
   }
 
   createUniforms = () => {
@@ -123,12 +124,16 @@ class ThreeText {
     this.directionalLight.position.set(5, 3, 2);
     this.directionalLight.target.position.set(0, 0, 0);
     this.scene.add(this.directionalLight);
-
-    // Resize the renderer on window resize
-    window.addEventListener('resize', this.updateCamera, true);
   }
 
   createItems = () => {
+    // Get the text
+    const urlParams = new URLSearchParams(window.location.search);
+    const textParam = urlParams.get('text');
+    const text = textParam && textParam.length
+      ? textParam
+      : 'Your ideal creative \n web development \n partner.';
+
     // Create the geometry
     const imageRatio = 1304 / 2000;
     const imageWidth = 60;
@@ -145,8 +150,7 @@ class ThreeText {
       side: THREE.DoubleSide,
     });
 
-    const message = 'Your ideal creative \n web development \n partner.';
-    const shapes = this.font.generateShapes(message, 8);
+    const shapes = this.font.generateShapes(text, 8);
     const geometry = new THREE.ShapeBufferGeometry(shapes);
     geometry.center();
 
@@ -162,9 +166,6 @@ class ThreeText {
     });
     this.blobMesh = new THREE.Mesh(blobGeom, blobMat);
     this.scene.add(this.blobMesh);
-
-    // Fit camera
-    this.updateCamera();
   }
 
   addEventListeners = () => {
@@ -234,7 +235,16 @@ class ThreeText {
   }
   
   updateLights = () => {
+    // Update light intensity based on GUI
     this.directionalLight.intensity = this.settings.lightIntensity;
+
+    // When the scene first starts, gradually fade in light
+    if (this.iter < 200 && this.directionalLight.intensity < this.targetLightIntensity) {
+      this.settings.lightIntensity += 0.003;
+
+      // Update the gui display for light intensity
+      APP.gui.update();
+    }
   }
 
   update = () => {
@@ -243,6 +253,7 @@ class ThreeText {
     this.updateUniforms();
     this.updateItems();
     this.updateLights();
+    this.updateCamera();
     this.renderer.render(this.scene, this.camera);
     window.requestAnimationFrame(this.update);
 
