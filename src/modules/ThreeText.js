@@ -25,6 +25,8 @@ class ThreeText {
     this.geometry;
     this.directionalLight;
     this.mesh;
+    this.bgMesh;
+    this.fgMesh;
     this.font;
 
     this.targetMeshScale = 1;
@@ -38,8 +40,8 @@ class ThreeText {
     this.settings = {
       cameraDistance: 100,
       mouseEase: 0.05,
-      blobMinScale: 0.8,
-      blobMaxScale: 2,
+      blobMinScale: 1,
+      blobMaxScale: 2.5,
       blobScaleEase: 0.05,
       blobInflate: 0.015,
       blobDeflate: 0.01,
@@ -144,7 +146,7 @@ class ThreeText {
       uniforms: this.uniforms,
       vertexShader: vertShader,
       fragmentShader: fragShader,
-      depthTest: false,
+      depthTest: true,
       transparent: true,
       vertexColors: true,
       side: THREE.DoubleSide,
@@ -157,15 +159,23 @@ class ThreeText {
     this.mesh = new THREE.Mesh(geometry, shaderMaterial);
     this.scene.add(this.mesh);
 
-    // Create sphere
-    let blobGeom = new THREE.TorusBufferGeometry(10, 3, 16, 100);
-    let blobMat = new THREE.MeshPhongMaterial({
+    // Foreground + Background Material
+    let bgFgMaterial = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       specular: 0x0000ff,
       shininess: 6,
     });
-    this.blobMesh = new THREE.Mesh(blobGeom, blobMat);
-    this.scene.add(this.blobMesh);
+
+    // Background mesh
+    let bgGeom = new THREE.TorusBufferGeometry(10, 3, 16, 100);
+    this.bgMesh = new THREE.Mesh(bgGeom, bgFgMaterial);
+    this.scene.add(this.bgMesh);
+
+    // Foreground mesh
+    let fgGeom = new THREE.TorusBufferGeometry(10, 3, 16, 100);
+    this.fgMesh = new THREE.Mesh(fgGeom, bgFgMaterial);
+    this.fgMesh.scale.set(0.5, 0.5, 0.5);
+    this.scene.add(this.fgMesh);
   }
 
   addEventListeners = () => {
@@ -203,17 +213,24 @@ class ThreeText {
 
   updateItems = () => {
     // Blob follows mouse
-    this.blobMesh.position.set(this.currentMouse.x, this.currentMouse.y, 15);
+    this.bgMesh.position.set(this.currentMouse.x, this.currentMouse.y, -35);
+    this.fgMesh.position.set(-this.currentMouse.x, -this.currentMouse.y, 35);
 
-    // Blob rotates
-    const rotateSpeed = Math.abs(this.targetMouse.x - this.currentMouse.x) * 0.002 + 0.01;
-    this.blobMesh.rotation.x += rotateSpeed;
-    this.blobMesh.rotation.y += rotateSpeed;
-    this.blobMesh.rotation.z += rotateSpeed;
+    // Bg rotates
+    const bgRotateSpeed = Math.abs(this.targetMouse.x - this.currentMouse.x) * 0.002 + 0.01;
+    this.bgMesh.rotation.x += bgRotateSpeed;
+    this.bgMesh.rotation.y += bgRotateSpeed;
+    this.bgMesh.rotation.z += bgRotateSpeed;
+
+    // fg rotates
+    const fgRotateSpeed = Math.abs(this.targetMouse.x - this.currentMouse.x) * 0.0015 + 0.008;
+    this.fgMesh.rotation.x += fgRotateSpeed;
+    this.fgMesh.rotation.y += fgRotateSpeed;
+    this.fgMesh.rotation.z += fgRotateSpeed;
 
     // Blob size based on mousemovement
-    const scaleEffect = (this.targetMeshScale - this.blobMesh.scale.x) * this.settings.blobScaleEase;
-    this.blobMesh.scale.set(this.blobMesh.scale.x + scaleEffect, this.blobMesh.scale.x + scaleEffect, this.blobMesh.scale.x + scaleEffect);
+    const scaleEffect = (this.targetMeshScale - this.bgMesh.scale.x) * this.settings.blobScaleEase;
+    this.bgMesh.scale.set(this.bgMesh.scale.x + scaleEffect, this.bgMesh.scale.x + scaleEffect, this.bgMesh.scale.x + scaleEffect);
 
     if (this.targetMeshScale > this.settings.blobMinScale) {
       this.targetMeshScale -= this.settings.blobDeflate;
