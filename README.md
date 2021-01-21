@@ -1,6 +1,6 @@
-# Snowpack Animation Boilerplate
+# Three.js Text Header
 
-A foundation for interactive animations built on Snowpack
+Three.js experiment with animated text.
 
 ## Development
 
