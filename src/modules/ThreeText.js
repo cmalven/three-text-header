@@ -46,9 +46,8 @@ class ThreeText {
     this.init();
   }
 
-  init = async() => {
+  init = () => {
     this.createGui();
-    await this.loadTexture();
     this.createUniforms();
     this.createApp();
 
@@ -75,10 +74,6 @@ class ThreeText {
     window.APP.gui.add(this.settings, 'blobScaleEase', 0.001, 0.5);
     window.APP.gui.add(this.settings, 'blobInflate', 0.001, 0.1);
     window.APP.gui.add(this.settings, 'blobDeflate', 0.001, 0.1);
-  }
-
-  loadTexture = async() => {
-    this.imageTexture = await new THREE.TextureLoader().load('https://assets.codepen.io/66496/temple-ranch-hero.jpg');
   }
 
   createUniforms = () => {
