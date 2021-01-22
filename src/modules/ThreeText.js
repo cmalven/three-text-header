@@ -33,14 +33,14 @@ class ThreeText {
     this.targetLightIntensity = 0.4;
 
     // Mouse
-    this.currentMouse = { x: 0, y: 0 };
-    this.targetMouse = { x: 0, y: 0 };
+    this.currentMouse = { x: -23, y: 5 };
+    this.targetMouse = { x: -23, y: 5 };
 
     // Settings
     this.settings = {
       cameraDistance: 100,
       mouseEase: 0.05,
-      blobMinScale: 1,
+      blobMinScale: 1.25,
       blobMaxScale: 2.5,
       blobScaleEase: 0.05,
       blobInflate: 0.015,
@@ -74,7 +74,7 @@ class ThreeText {
     folder.open();
 
     window.APP.gui.add(this.settings, 'mouseEase', 0.01, 0.3);
-    window.APP.gui.add(this.settings, 'blobMinScale', 0.1, 1);
+    window.APP.gui.add(this.settings, 'blobMinScale', 0.1, 2);
     window.APP.gui.add(this.settings, 'blobMaxScale', 0.5, 5);
     window.APP.gui.add(this.settings, 'blobScaleEase', 0.001, 0.5);
     window.APP.gui.add(this.settings, 'blobInflate', 0.001, 0.1);
